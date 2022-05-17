@@ -3,12 +3,11 @@ from request_processor import RequestProcessor
 
 
 class Protocol:
-    def __init__(self, handler, selector, sock, addr):
-        self.handler = handler
+    def __init__(self, handler, selector, sock, addr):        
         self.selector = selector
         self.sock = sock
         self.addr = addr
-        self.request_processor = RequestProcessor(sock, addr)
+        self.request_processor = RequestProcessor(handler, sock, addr)
 
     def process_events(self, mask):
         if mask & selectors.EVENT_READ:
@@ -17,18 +16,13 @@ class Protocol:
             return self.write()
 
     def read(self):
-        payloads = self.request_processor.process()
-        for payload in payloads:
-            print(payload)
-
-        return self.request_processor.is_connected()
+        return self.request_processor.process()
 
     def write(self):
         return True
 
     def close(self):
-        print(f"Closing connection to {self.addr}")
-        self.is_connected = False
+        print(f"Closing connection to {self.addr}")        
         try:
             self.selector.unregister(self.sock)
         except Exception as e:

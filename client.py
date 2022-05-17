@@ -8,7 +8,7 @@ PORT = 65432
 
 
 def create_message():
-    content = {"A": 1, "B": 2}
+    content = {"event_type": "foo", "A": 1, "B": 2}
     content_type = "text/json"
     content_encoding = "utf-8"
     content_bytes = utils.encode_json_to_bytes(content, content_encoding)
@@ -27,5 +27,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
 
     message = create_message()    
+    s.sendall(message)
     s.sendall(message)
     input("Hit enter to exit")

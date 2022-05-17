@@ -1,7 +1,7 @@
 import struct
 import utils
 from socket_reader import SocketReader
-
+from message import Message
 
 __all__ = ["RequestProcessor"]
 
@@ -90,11 +90,20 @@ class Payload:
 # State Manager
 # -------------
 class RequestProcessor:
-    def __init__(self, client_sock, addr):
+    def __init__(self, handler, client_sock, addr):
         self.socket_stream = SocketReader(client_sock, addr)
         self.state = ProtocolHeader(self)
+        self.handler = handler
 
     def process(self):
+        for payload in self.payloads:
+            message = Message(payload)            
+            self.handler.dispatch(message)
+
+        return self.socket_stream.is_connected
+
+    @property
+    def payloads(self):
         payloads = []
         recv_buffer = self.socket_stream.read()
 
@@ -111,6 +120,3 @@ class RequestProcessor:
             self.state.transition()
 
         return payloads
-
-    def is_connected(self):
-        return self.socket_stream.is_connected
