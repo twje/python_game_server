@@ -22,6 +22,7 @@ class SocketReadStream:
 
     def consume_receive_buffer(self, length):
         self.recv_buffer = self.recv_buffer[length:]
+        return self.recv_buffer
 
     def is_empty(self):
         return len(self.recv_buffer) == 0
