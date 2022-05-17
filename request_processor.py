@@ -90,8 +90,8 @@ class Payload:
 # State Manager
 # -------------
 class RequestProcessor:
-    def __init__(self, selector, client_sock, addr):
-        self.socket_stream = SocketReader(selector, client_sock, addr)
+    def __init__(self, client_sock, addr):
+        self.socket_stream = SocketReader(client_sock, addr)
         self.state = ProtocolHeader(self)
 
     def process(self):
@@ -111,3 +111,6 @@ class RequestProcessor:
             self.state.transition()
 
         return payloads
+
+    def is_connected(self):
+        return self.socket_stream.is_connected

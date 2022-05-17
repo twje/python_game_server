@@ -26,13 +26,15 @@ class Server:
         conn, addr = client_sock.accept()
         print(f"Accepted connection from {addr}")
         conn.setblocking(False)
-        protocol = Protocol(self.selector, conn, addr)
+        protocol = Protocol(self.handler, self.selector, conn, addr)
         mask = selectors.EVENT_READ | selectors.EVENT_WRITE
-        self.selector.register(conn, mask, data=protocol)
+        self.selector.register(conn, mask, data=protocol)        
 
     def process_client_request(self, key, mask):        
         protocol = key.data
-        protocol.process_events(mask)
+        is_connected = protocol.process_events(mask)
+        if not is_connected:
+            protocol.close()
 
     def subscribe(self, event_type, observer):
         return self.handler.subscribe(event_type, observer)

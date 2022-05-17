@@ -1,18 +1,18 @@
 class SocketReader:
-    def __init__(self, selector, sock, addr):
-        self.selector = selector
+    def __init__(self, sock, addr):        
         self.sock = sock
         self.addr = addr
         self.recv_buffer = b""
+        self.is_connected = True
 
     def read(self):
         try:
             data = self.sock.recv(4096)
             if data:
                 self.recv_buffer += data
-            else:                
+            else:
                 self.recv_buffer = data
-                self.close()
+                self.is_connected = False
 
         except BlockingIOError:
             # Resource temporarily unavailable (errno EWOULDBLOCK)
@@ -26,18 +26,3 @@ class SocketReader:
 
     def is_empty(self):
         return len(self.recv_buffer) == 0
-
-    def close(self):
-        print(f"Closing connection to {self.addr}")
-        try:
-            self.selector.unregister(self.sock)
-        except Exception as e:
-            print(
-                f"Error: selector.unregister() exception for "
-                f"{self.addr}: {e!r}"
-            )
-
-        try:
-            self.sock.close()
-        except OSError as e:
-            print(f"Error: socket.close() exception for {self.addr}: {e!r}")
