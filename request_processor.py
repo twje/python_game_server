@@ -1,6 +1,6 @@
 import struct
 import utils
-from socket_read_stream import SocketReadStream
+from socket_reader import SocketReader
 
 
 __all__ = ["RequestProcessor"]
@@ -91,7 +91,7 @@ class Payload:
 # -------------
 class RequestProcessor:
     def __init__(self, selector, client_sock, addr):
-        self.socket_stream = SocketReadStream(selector, client_sock, addr)
+        self.socket_stream = SocketReader(selector, client_sock, addr)
         self.state = ProtocolHeader(self)
 
     def process(self):

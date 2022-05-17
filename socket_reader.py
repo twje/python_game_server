@@ -1,4 +1,4 @@
-class SocketReadStream:
+class SocketReader:
     def __init__(self, selector, sock, addr):
         self.selector = selector
         self.sock = sock
